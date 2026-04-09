@@ -6,7 +6,7 @@ Generate a repo-ready bootstrap guide from a small, structured documentation pac
 
 ## What it does
 
-- Validates a Documentation Pack with required `PRD` and `TAD`
+- Validates a Documentation Pack with required `PRD` - Product Requirement Document and `TAD` - Technical Architecture Document
 - Infers a project profile when one is provided
 - Generates repo-agnostic bootstrap guidance
 - Suggests workflow, structure, and deliverables by project kind
@@ -24,8 +24,8 @@ Generate a repo-ready bootstrap guide from a small, structured documentation pac
 
 The script expects a Documentation Pack with:
 
-- `PRD`
-- `TAD`
+- `PRD` - Product Requirement Document
+- `TAD` - Technical Architecture Document
 - optional `Project Profile`
 
 ## Generated output
