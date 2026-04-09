@@ -1,6 +1,6 @@
 ---
 createdAt: "2026-04-09T10:43:04-0300"
-lastModifiedAt: "2026-04-09T12:26:52-0300"
+lastModifiedAt: "2026-04-09T12:44:53-0300"
 ---
 
 # Repository Bootstrap Guide
@@ -52,7 +52,11 @@ Use this guide to start a new repository from a Documentation Pack without inven
 
 | Path | Purpose |
 | --- | --- |
-| docs/ | product, architecture, governance, and runbooks |
+| AGENTS.md | agent entrypoint and reading order |
+| README.md | project overview and bootstrap usage |
+| docs/README.md | documentation entrypoint |
+| docs/governance/ | governance rules and guardrails |
+| docs/product/ | product and source-of-truth docs |
 | services/api/ | backend service or API |
 | apps/web/ | web client |
 | apps/mobile/ | mobile client, if applicable |
@@ -107,4 +111,5 @@ Use this guide to start a new repository from a Documentation Pack without inven
 ```bash
 python3 scripts/bootstrap_project_guide.py --pack path/to/documentation-pack.md --output docs/project_bootstrap_guide.md
 python3 scripts/bootstrap_project_guide.py --pack path/to/documentation-pack.md --output docs/project_bootstrap_guide.md --check
+python3 scripts/bootstrap_project_guide.py --pack path/to/documentation-pack.md --output docs/project_bootstrap_guide.md --scaffold --scaffold-root /path/to/new-repo
 ```

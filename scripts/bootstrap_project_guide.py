@@ -28,7 +28,11 @@ PROFILE_CATALOG = {
             "Handoff",
         ],
         "repo_structure": [
-            ("docs/", "source-of-truth docs, governance, handoffs"),
+            ("AGENTS.md", "agent entrypoint and reading order"),
+            ("README.md", "project overview and bootstrap usage"),
+            ("docs/README.md", "documentation entrypoint"),
+            ("docs/governance/", "governance rules and guardrails"),
+            ("docs/product/", "product and source-of-truth docs"),
             ("src/", "implementation code"),
             ("tests/", "unit, integration, and acceptance tests"),
         ],
@@ -60,7 +64,11 @@ PROFILE_CATALOG = {
             "Handoff",
         ],
         "repo_structure": [
-            ("docs/", "product, architecture, governance, and runbooks"),
+            ("AGENTS.md", "agent entrypoint and reading order"),
+            ("README.md", "project overview and bootstrap usage"),
+            ("docs/README.md", "documentation entrypoint"),
+            ("docs/governance/", "governance rules and guardrails"),
+            ("docs/product/", "product and source-of-truth docs"),
             ("services/api/", "backend service or API"),
             ("apps/web/", "web client"),
             ("apps/mobile/", "mobile client, if applicable"),
@@ -97,7 +105,11 @@ PROFILE_CATALOG = {
             "Handoff",
         ],
         "repo_structure": [
-            ("docs/", "product, architecture, governance, and release notes"),
+            ("AGENTS.md", "agent entrypoint and reading order"),
+            ("README.md", "project overview and bootstrap usage"),
+            ("docs/README.md", "documentation entrypoint"),
+            ("docs/governance/", "governance rules and guardrails"),
+            ("docs/product/", "product and source-of-truth docs"),
             ("apps/mobile/", "mobile application"),
             ("packages/shared/", "shared domain models and utilities"),
             ("tests/", "unit, device, and integration tests"),
@@ -130,7 +142,11 @@ PROFILE_CATALOG = {
             "Handoff",
         ],
         "repo_structure": [
-            ("docs/", "product, architecture, governance, and runbooks"),
+            ("AGENTS.md", "agent entrypoint and reading order"),
+            ("README.md", "project overview and bootstrap usage"),
+            ("docs/README.md", "documentation entrypoint"),
+            ("docs/governance/", "governance rules and guardrails"),
+            ("docs/product/", "product and source-of-truth docs"),
             ("apps/web/", "browser application"),
             ("packages/shared/", "shared UI, domain, or contract code"),
             ("tests/", "unit, integration, and browser tests"),
@@ -163,7 +179,11 @@ PROFILE_CATALOG = {
             "Handoff",
         ],
         "repo_structure": [
-            ("docs/", "product, architecture, governance, and runbooks"),
+            ("AGENTS.md", "agent entrypoint and reading order"),
+            ("README.md", "project overview and bootstrap usage"),
+            ("docs/README.md", "documentation entrypoint"),
+            ("docs/governance/", "governance rules and guardrails"),
+            ("docs/product/", "product and source-of-truth docs"),
             ("apps/web/", "browser shell and hosting entry point"),
             ("packages/game/", "game loop, rules, and state"),
             ("packages/content/", "content and authored data"),
@@ -198,7 +218,11 @@ PROFILE_CATALOG = {
             "Handoff",
         ],
         "repo_structure": [
-            ("docs/", "product, architecture, governance, and release notes"),
+            ("AGENTS.md", "agent entrypoint and reading order"),
+            ("README.md", "project overview and bootstrap usage"),
+            ("docs/README.md", "documentation entrypoint"),
+            ("docs/governance/", "governance rules and guardrails"),
+            ("docs/product/", "product and source-of-truth docs"),
             ("apps/ios/", "native iOS shell and platform integration"),
             ("packages/game/", "game loop, rules, and state"),
             ("packages/content/", "content and authored data"),
@@ -296,14 +320,21 @@ def normalize_kind(value: str) -> str:
     return PROFILE_ALIASES.get(key, PROFILE_ALIASES.get(key.replace("_", " "), key))
 
 
+def normalize_key(value: str) -> str:
+    return re.sub(r"\s+", " ", value.strip().lower())
+
+
 def parse_project_profile(lines: list[str]) -> dict[str, str]:
-    profile = collect_bullet_pairs(lines)
+    profile: dict[str, str] = {}
+    for key, value in collect_bullet_pairs(lines).items():
+        profile[normalize_key(key)] = value
     return profile
 
 
 def infer_project_kind(title: str, profile: dict[str, str], order_items: list[str]) -> str:
     explicit = (
-        profile.get("project kind")
+        profile.get("repository kind")
+        or profile.get("project kind")
         or profile.get("project type")
         or profile.get("kind")
         or profile.get("delivery model")
@@ -347,6 +378,204 @@ def validate_pack(pack_path: Path) -> tuple[str, list[str], dict[str, str], str]
     profile = parse_project_profile(sections.get("Project Profile", []))
     kind = infer_project_kind(title, profile, order_items)
     return title, order_items, profile, kind
+
+
+def slugify_title(value: str) -> str:
+    slug = re.sub(r"[^a-z0-9]+", "-", value.strip().lower())
+    slug = re.sub(r"-+", "-", slug).strip("-")
+    return slug or "document"
+
+
+def make_readme_index(title: str, section_title: str, entries: list[tuple[str, str]]) -> str:
+    lines = [
+        f"# {title}",
+        "",
+        f"## {section_title}",
+        "",
+    ]
+    for label, path in entries:
+        lines.append(f"- [{label}]({path})")
+    lines.append("")
+    return "\n".join(lines)
+
+
+def build_scaffold_files(title: str, profile: dict[str, str], kind: str, order_items: list[str]) -> dict[Path, str]:
+    catalog = PROFILE_CATALOG[kind]
+    docs_root = Path("docs")
+    governance_root = docs_root / "governance"
+    product_root = docs_root / "product"
+
+    project_name = title if title else "Bootstrap Scaffold"
+    readme_lines = [
+        f"# {project_name}",
+        "",
+        "This repository was scaffolded from a Documentation Pack.",
+        "",
+        "## Entry Points",
+        "",
+        "- [Documentation](docs/README.md)",
+        "- [Governance](docs/governance/README.md)",
+        "- [Bootstrap Guide](docs/project_bootstrap_guide.md)",
+        "",
+    ]
+
+    docs_index_entries = [("Governance", "governance/README.md"), ("Project Docs", "product/README.md")]
+    product_entries: list[tuple[str, str]] = []
+    for item in order_items:
+        if item.strip().lower() == "governance":
+            continue
+        filename = f"{slugify_title(item)}.md"
+        product_entries.append((item, f"{filename}"))
+
+    files: dict[Path, str] = {
+        Path("README.md"): "\n".join(readme_lines),
+        Path("AGENTS.md"): "\n".join(
+            [
+                f"# AGENTS.md — {project_name}",
+                "",
+                "- Start at `docs/README.md`.",
+                "- `docs/governance/README.md` is the authoritative governance entrypoint.",
+                "- Read docs on demand; do not crawl the repository unnecessarily.",
+                "- Use repo entrypoints and existing scripts only.",
+                "- Create or update `PLANS.md` before non-trivial multi-file work.",
+                "- If something is undefined, resolve it in the governing docs first.",
+                "",
+            ]
+        ),
+        docs_root / "README.md": make_readme_index(f"{project_name} Documentation", "Navigation", docs_index_entries),
+        governance_root / "README.md": make_readme_index(
+            "Governance Index",
+            "Read On Demand",
+            [
+                ("PROJECT_RULES.md", "PROJECT_RULES.md"),
+                ("ARCHITECTURE_GUARDRAILS.md", "ARCHITECTURE_GUARDRAILS.md"),
+                ("CONTENT_GOVERNANCE.md", "CONTENT_GOVERNANCE.md"),
+                ("QUALITY_GATES.md", "QUALITY_GATES.md"),
+                ("WORKFLOW_RULES.md", "WORKFLOW_RULES.md"),
+            ],
+        ),
+        governance_root / "PROJECT_RULES.md": "\n".join(
+            [
+                "# Project Rules",
+                "",
+                "## Purpose",
+                "",
+                "Define the immutable product rules that constrain implementation and content decisions.",
+                "",
+                "## Scope Boundaries",
+                "",
+                f"- Repository kind: {catalog['label']}",
+                f"- Project profile: {profile or 'Insufficient data'}",
+                "",
+                "## Change Rule",
+                "",
+                "- Any new product rule must be captured in the relevant source-of-truth doc before implementation.",
+                "",
+            ]
+        ),
+        governance_root / "ARCHITECTURE_GUARDRAILS.md": "\n".join(
+            [
+                "# Architecture Guardrails",
+                "",
+                "## Purpose",
+                "",
+                "Define module boundaries and the constraints that keep the scaffold maintainable.",
+                "",
+                "## Baseline Rules",
+                "",
+                "- Keep presentation, domain logic, and persistence separate.",
+                "- Keep shared contracts in a dedicated shared layer.",
+                "- Do not introduce cross-layer imports without updating the architecture doc first.",
+                "",
+            ]
+        ),
+        governance_root / "CONTENT_GOVERNANCE.md": "\n".join(
+            [
+                "# Content Governance",
+                "",
+                "## Purpose",
+                "",
+                "Define content ownership, naming, and validation rules for authored files.",
+                "",
+                "## Baseline Rules",
+                "",
+                "- Use stable, semantic names for files and document ids.",
+                "- Keep locale-specific or domain-specific content scoped explicitly.",
+                "- Validate authored content before runtime use.",
+                "",
+            ]
+        ),
+        governance_root / "QUALITY_GATES.md": "\n".join(
+            [
+                "# Quality Gates",
+                "",
+                "## Purpose",
+                "",
+                "Define the minimum checks required before implementation or release.",
+                "",
+                "## Baseline Rules",
+                "",
+                "- Do not bypass validation silently.",
+                "- Require the first implementation slice to pass review and test gates before expansion.",
+                "- Treat unresolved exceptions as release blockers unless explicitly documented.",
+                "",
+            ]
+        ),
+        governance_root / "WORKFLOW_RULES.md": "\n".join(
+            [
+                "# Workflow Rules",
+                "",
+                "## Purpose",
+                "",
+                "Define how planning, editing, and validation should proceed in the scaffolded repository.",
+                "",
+                "## Baseline Rules",
+                "",
+                "- Keep one owner per workstream.",
+                "- Record the active task state in a dedicated handoff or backlog document.",
+                "- Use small, reversible changes.",
+                "",
+            ]
+        ),
+        product_root / "README.md": make_readme_index(
+            "Product Documentation Index",
+            "Documents",
+            product_entries,
+        ),
+    }
+
+    for item in order_items:
+        if item.strip().lower() == "governance":
+            continue
+        filename = slugify_title(item)
+        files[product_root / filename] = "\n".join(
+            [
+                f"# {item}",
+                "",
+                "## Purpose",
+                "",
+                "Source-of-truth document scaffolded from the Documentation Pack.",
+                "",
+                "## Notes",
+                "",
+                "- Fill this document from the Documentation Pack before implementation starts.",
+                "",
+            ]
+        )
+
+    return files
+
+
+def write_scaffold(root: Path, files: dict[Path, str]) -> list[Path]:
+    created: list[Path] = []
+    for relative_path, content in files.items():
+        target = root / relative_path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        if target.exists():
+            continue
+        target.write_text(content.rstrip() + "\n")
+        created.append(target)
+    return created
 
 
 def parse_frontmatter(text: str) -> dict[str, str]:
@@ -482,6 +711,7 @@ def render_guide_body(title: str, profile: dict[str, str], kind: str, order_item
         "```bash",
         "python3 scripts/bootstrap_project_guide.py --pack path/to/documentation-pack.md --output docs/project_bootstrap_guide.md",
         "python3 scripts/bootstrap_project_guide.py --pack path/to/documentation-pack.md --output docs/project_bootstrap_guide.md --check",
+        "python3 scripts/bootstrap_project_guide.py --pack path/to/documentation-pack.md --output docs/project_bootstrap_guide.md --scaffold --scaffold-root /path/to/new-repo",
         "```",
         "",
     ]
@@ -512,8 +742,18 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--pack", required=True, help="Path to the markdown Documentation Pack.")
     parser.add_argument(
         "--output",
-        default=str(DEFAULT_OUTPUT),
+        default=None,
         help="Path to the generated markdown guide.",
+    )
+    parser.add_argument(
+        "--scaffold",
+        action="store_true",
+        help="Create a baseline repository scaffold from the Documentation Pack.",
+    )
+    parser.add_argument(
+        "--scaffold-root",
+        default=".",
+        help="Target root directory for scaffold creation.",
     )
     parser.add_argument(
         "--check",
@@ -526,7 +766,13 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
     pack_path = Path(args.pack)
-    output_path = Path(args.output)
+    scaffold_root = Path(args.scaffold_root)
+    if args.output is None:
+        output_path = scaffold_root / "docs/project_bootstrap_guide.md" if args.scaffold else DEFAULT_OUTPUT
+    else:
+        output_path = Path(args.output)
+        if args.scaffold and not output_path.is_absolute():
+            output_path = scaffold_root / output_path
 
     try:
         title, order_items, profile, kind = validate_pack(pack_path)
@@ -551,6 +797,10 @@ def main() -> int:
         generated = render_guide(title, profile, kind, order_items, created_at, last_modified_at)
         output_path.parent.mkdir(parents=True, exist_ok=True)
         output_path.write_text(generated)
+        if args.scaffold:
+            files = build_scaffold_files(title, profile, kind, order_items)
+            created = write_scaffold(scaffold_root, files)
+            print(f"Created {len(created)} scaffold file(s) under {scaffold_root}")
         print(f"Generated bootstrap guide at {output_path}")
         return 0
     except Exception as exc:  # noqa: BLE001

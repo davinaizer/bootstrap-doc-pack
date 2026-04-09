@@ -2,12 +2,12 @@
 
 ## Goal
 
-Upgrade the bootstrap script to infer project profile, repo structure, and workflow suggestions from a Documentation Pack, while staying language- and architecture-agnostic.
+Keep the bootstrap generator aligned with the Documentation Pack contract and the scaffolded repository structure.
 
 ## Scope
 
-- Add project profile parsing to the Documentation Pack contract.
-- Generate profile-specific bootstrap guidance for common project kinds.
+- Keep the guide generator profile-aware and repo-agnostic.
+- Keep scaffold output aligned with the documented governance and docs entrypoints.
 - Keep PRD and TAD mandatory, with optional profile metadata.
 - Keep the script usable for full stack, mobile, web app, web game, and iOS game repos.
 
@@ -17,13 +17,17 @@ Upgrade the bootstrap script to infer project profile, repo structure, and workf
 - `scripts/bootstrap_project_guide.py`
 - `docs/project_bootstrap_guide.md`
 - `docs/documentation_pack_example.md`
+- `README.md`
+- `AGENTS.md`
+- `docs/README.md`
+- `docs/governance/*`
 
 ## Steps
 
-1. Extend the pack contract with a project profile section.
-2. Add profile classification and repo-structure suggestions to the generator.
-3. Regenerate the guide from the example pack.
-4. Validate the generator against the example pack.
+1. Keep the Documentation Pack profile keys aligned with generator parsing.
+2. Generate the bootstrap guide from the example pack.
+3. Validate the generator against the example pack.
+4. Expand scaffold output only if a target repository requires additional baseline files.
 
 ## Validation
 
@@ -32,6 +36,7 @@ Upgrade the bootstrap script to infer project profile, repo structure, and workf
 ## Risks
 
 - Overfitting the profile catalog to one stack family would reduce reuse.
+- Generating too many repository-specific files in the scaffold would make the tool harder to maintain.
 
 ## Rollback
 
