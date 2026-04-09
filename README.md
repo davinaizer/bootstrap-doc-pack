@@ -52,11 +52,11 @@ python3 scripts/bootstrap_project_guide.py --pack docs/documentation_pack_exampl
 
 The guide is designed to work across:
 
-- full stack repos
-- mobile repos
-- web app repos
-- web game repos
-- iOS game repos
+- full-stack application repositories
+- native mobile application repositories
+- browser-based web application repositories
+- browser-based game repositories
+- native iOS game repositories
 
 ## Design
 
