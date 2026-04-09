@@ -1,6 +1,6 @@
 ---
 createdAt: "2026-04-09T10:43:04-0300"
-lastModifiedAt: "2026-04-09T12:11:00-0300"
+lastModifiedAt: "2026-04-09T12:26:52-0300"
 ---
 
 # Repository Bootstrap Guide
@@ -16,11 +16,11 @@ Use this guide to start a new repository from a Documentation Pack without inven
 - Optional but recommended: Project Profile
 - Recommended taxonomy: PRD, TAD, API Contract and Data Model, UX/UI Specification, Implementation Backlog, QA and Acceptance Test Plan, Build and Deployment Runbook, Governance, Handoff
 
-## Detected Profile
+## Detected Repository Profile
 
-- Project kind: Full stack
-- Profile summary: Use when the repo includes backend plus at least one client surface.
-- Project Kind: full-stack
+- Repository kind: Full-stack application repository
+- Profile summary: Use when the repository includes backend plus at least one client surface.
+- Repository Kind: full-stack
 - Primary Platforms: web app, iOS app
 - Primary Stack: backend + client apps
 - Architecture Style: service + client

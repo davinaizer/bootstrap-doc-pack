@@ -11,14 +11,14 @@ Generate a repo-ready bootstrap guide from a small, structured documentation pac
 - Generates repo-agnostic bootstrap guidance
 - Suggests workflow, structure, and deliverables by project kind
 
-## Supported project kinds
+## Supported repository kinds
 
-- Full stack
-- Mobile
-- Web app
-- Web game
-- iOS game
-- General fallback
+- Full-stack application repository
+- Native mobile application repository
+- Browser-based web application repository
+- Browser-based game repository
+- Native iOS game repository
+- General repository fallback
 
 ## Input contract
 

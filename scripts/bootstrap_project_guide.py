@@ -46,8 +46,8 @@ PROFILE_CATALOG = {
         ],
     },
     "full-stack": {
-        "label": "Full stack",
-        "summary": "Use when the repo includes backend plus at least one client surface.",
+        "label": "Full-stack application repository",
+        "summary": "Use when the repository includes backend plus at least one client surface.",
         "recommended_taxonomy": [
             "PRD",
             "TAD",
@@ -83,7 +83,7 @@ PROFILE_CATALOG = {
         ],
     },
     "mobile": {
-        "label": "Mobile",
+        "label": "Native mobile application repository",
         "summary": "Use when the primary deliverable is an iOS or Android app without a web client focus.",
         "recommended_taxonomy": [
             "PRD",
@@ -116,7 +116,7 @@ PROFILE_CATALOG = {
         ],
     },
     "web-app": {
-        "label": "Web app",
+        "label": "Browser-based web application repository",
         "summary": "Use when the primary deliverable is a browser application.",
         "recommended_taxonomy": [
             "PRD",
@@ -149,7 +149,7 @@ PROFILE_CATALOG = {
         ],
     },
     "web-game": {
-        "label": "Web game",
+        "label": "Browser-based game repository",
         "summary": "Use when the primary deliverable is a browser game.",
         "recommended_taxonomy": [
             "PRD",
@@ -184,7 +184,7 @@ PROFILE_CATALOG = {
         ],
     },
     "ios-game": {
-        "label": "iOS game",
+        "label": "Native iOS game repository",
         "summary": "Use when the primary deliverable is a native iOS game.",
         "recommended_taxonomy": [
             "PRD",
@@ -416,9 +416,9 @@ def render_guide_body(title: str, profile: dict[str, str], kind: str, order_item
         "- Optional but recommended: Project Profile",
         f"- Recommended taxonomy: {', '.join(taxonomy)}",
         "",
-        "## Detected Profile",
+        "## Detected Repository Profile",
         "",
-        f"- Project kind: {catalog['label']}",
+        f"- Repository kind: {catalog['label']}",
         f"- Profile summary: {catalog['summary']}",
         *profile_lines,
         "",
